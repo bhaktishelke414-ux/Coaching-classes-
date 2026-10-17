@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Coaching Institute Portal</title>
+<style>
+:root{
+  --navy:#0B2545; --navy2:#123A6B; --red:#C8202E; --red-dark:#9E1622;
+  --gold:#E8B84B; --gold-soft:#F4E3B2; --cream:#FBF6EA; --ink:#1B1B1B;
+  --muted:#6b6458; --line:#E6DCC4; --white:#fff;
+  --radius:10px;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--cream);color:var(--ink);font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;}
+h1,h2,h3,h4{font-family:Georgia,'Times New Roman',serif;margin:0 0 .3em;color:var(--navy);}
+p{line-height:1.55;color:var(--ink)}
+.view{display:none}
+.view.active{display:block}
+a{color:inherit}
+img{max-width:100%}
+.wrap{max-width:1100px;margin:0 auto;padding:0 24px}
+.btn{display:inline-block;padding:10px 20px;border-radius:6px;border:2px solid transparent;font-weight:600;cursor:pointer;font-size:.95em;text-decoration:none}
+.btn-red{background:var(--red);color:#fff}
+.btn-red:hover{background:var(--red-dark)}
+.btn-gold{background:var(--gold);color:var(--navy)}
+.btn-gold:hover{background:#dba52f}
+.btn-outline{background:transparent;border-color:var(--navy);color:var(--navy)}
+.btn-outline:hover{background:var(--navy);color:#fff}
+.btn-sm{padding:6px 12px;font-size:.82em;border-radius:5px}
+/* ---- Public nav ---- */
+header.topbar{background:var(--navy);color:#fff;position:sticky;top:0;z-index:50;padding-top:env(safe-area-inset-top,0px)}
+.topbar-inner{max-width:1100px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.brand{display:flex;align-items:center;gap:10px;font-family:Georgia,serif;font-weight:700;font-size:1.25em;color:#fff;text-decoration:none}
+.brand-mark{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,var(--red),var(--gold));display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-weight:700;color:#fff}
+nav.pubnav{display:flex;gap:22px;flex-wrap:wrap}
+nav.pubnav a{color:#dfe7f2;text-decoration:none;font-size:.93em;cursor:pointer;border-bottom:2px solid transparent;padding-bottom:2px}
+nav.pubnav a:hover,nav.pubnav a.active{color:#fff;border-color:var(--gold)}
+/* ---- Hero ---- */
+.hero{background:linear-gradient(120deg,var(--navy) 55%,var(--navy2) 100%);color:#fff;padding:64px 0 56px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-80px;top:-80px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(232,184,75,.25),transparent 70%)}
+.hero .wrap{position:relative;display:grid;grid-template-columns:1.3fr 1fr;gap:40px;align-items:center}
+.hero h1{color:#fff;font-size:2.3em;line-height:1.15;margin-bottom:.25em}
+.hero .accent{color:var(--gold)}
+.hero p{color:#cfd9e8;max-width:46ch}
+.hero-actions{margin-top:22px;display:flex;gap:12px;flex-wrap:wrap}
+.hero-stats{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.stat{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:var(--radius);padding:16px}
+.stat b{display:block;font-size:1.6em;color:var(--gold);font-family:Georgia,serif}
+.stat span{font-size:.82em;color:#cfd9e8}
+@media(max-width:760px){.hero .wrap{grid-template-columns:1fr}}
+/* ---- sections ---- */
+.section{padding:54px 0}
+.section-head{max-width:60ch;margin-bottom:30px}
+.section-head p{color:var(--muted)}
+.eyebrow{color:var(--red);font-weight:700;font-size:.82em;letter-spacing:.02em}
+.grid{display:grid;gap:20px}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+.grid-4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:800px){.grid-3,.grid-4{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.grid-3,.grid-4{grid-template-columns:1fr}}
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+.course-card{border-top:4px solid var(--red)}
+.course-card h4{margin-bottom:6px}
+.course-card span{color:var(--muted);font-size:.85em}
+.feature{border-top:4px solid var(--gold);text-align:left}
+.feature .num{color:var(--gold);font-family:Georgia,serif;font-size:1.6em;font-weight:700;display:block;margin-bottom:6px}
+.band{background:var(--navy);color:#fff}
+.band h2{color:#fff}
+.band .section-head p{color:#cfd9e8}
+footer{background:var(--navy);color:#cfd9e8;padding:40px 0 24px;font-size:.9em}
+footer .wrap{display:grid;grid-template-columns:2fr 1fr 1fr;gap:30px}
+footer h4{color:#fff}
+footer a{color:#cfd9e8;text-decoration:none;display:block;margin-bottom:6px}
+footer .copyright{border-top:1px solid rgba(255,255,255,.15);margin-top:24px;padding-top:16px;text-align:center;font-size:.85em}
+@media(max-width:700px){footer .wrap{grid-template-columns:1fr}}
+/* ---- login ---- */
+.login-wrap{max-width:420px;margin:60px auto;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:30px;box-shadow:0 8px 30px rgba(11,37,69,.08)}
+.role-toggle{display:flex;background:var(--cream);border-radius:8px;padding:4px;margin-bottom:20px}
+.role-toggle button{flex:1;padding:9px;border:none;background:transparent;border-radius:6px;cursor:pointer;font-weight:600;color:var(--navy)}
+.role-toggle button.active{background:var(--navy);color:#fff}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:.85em;font-weight:600;margin-bottom:5px;color:var(--navy)}
+.field input,.field select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:6px;font-size:.95em}
+/* ---- app shell ---- */
+.app-shell{display:none;min-height:100vh}
+.app-shell.active{display:flex}
+.sidebar{width:220px;background:var(--navy);color:#fff;padding:20px 0;flex-shrink:0;padding-top:calc(20px + env(safe-area-inset-top,0px))}
+.sidebar .brand{padding:0 20px 20px;border-bottom:1px solid rgba(255,255,255,.15);margin-bottom:14px}
+.sidebar button{display:block;width:100%;text-align:left;background:transparent;border:none;color:#cfd9e8;padding:11px 20px;cursor:pointer;font-size:.92em;border-left:3px solid transparent}
+.sidebar button:hover{background:rgba(255,255,255,.06)}
+.sidebar button.active{background:rgba(255,255,255,.1);color:#fff;border-color:var(--gold)}
+.sidebar .logout{margin-top:14px;border-top:1px solid rgba(255,255,255,.15);padding-top:14px;color:var(--gold)}
+.main{flex:1;padding:28px 32px;overflow-x:auto}
+.main-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;flex-wrap:wrap;gap:10px}
+.who{color:var(--muted);font-size:.9em}
+.tabpane{display:none}
+.tabpane.active{display:block}
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:8px;overflow:hidden;font-size:.9em}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line)}
+th{background:var(--gold-soft);color:var(--navy);font-family:Georgia,serif}
+.badge{padding:3px 10px;border-radius:20px;font-size:.78em;font-weight:600}
+.badge-green{background:#DEF5E5;color:#177245}
+.badge-red{background:#FBE1E3;color:var(--red-dark)}
+.badge-gold{background:var(--gold-soft);color:#8a6b12}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:26px}
+@media(max-width:900px){.kpis{grid-template-columns:1fr 1fr}.main{padding:20px}.app-shell.active{flex-direction:column}.sidebar{width:100%;display:flex;overflow-x:auto;padding:10px}.sidebar .brand,.sidebar .logout{display:none}.sidebar button{white-space:nowrap;border-left:none;border-bottom:3px solid transparent}.sidebar button.active{border-color:var(--gold)}}
+.kpi{background:#fff;border:1px solid var(--line);border-left:4px solid var(--red);border-radius:8px;padding:16px}
+.kpi b{display:block;font-size:1.5em;color:var(--navy);font-family:Georgia,serif}
+.kpi span{font-size:.82em;color:var(--muted)}
+.panel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin-bottom:20px}
+.panel h3{margin-bottom:14px}
+.rowline{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.rowline:last-child{border-bottom:none}
+.tt-grid{display:grid;grid-template-columns:90px repeat(6,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden;font-size:.82em}
+.tt-grid div{background:#fff;padding:8px 6px}
+.tt-grid .hd{background:var(--navy);color:#fff;font-weight:600;text-align:center}
+.tt-grid .slot{background:var(--gold-soft);color:var(--navy);border-radius:5px;text-align:center;font-weight:600}
+select,input[type=text],input[type=number]{padding:8px;border:1px solid var(--line);border-radius:6px;font-size:.9em}
+.inline-form{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:16px}
+.inline-form .field{margin-bottom:0}
+.note-item{border-left:4px solid var(--gold);background:var(--cream);padding:12px 14px;border-radius:6px;margin-bottom:10px}
+.hint{font-size:.8em;color:var(--muted);margin-top:4px}
+input[type=date]{padding:8px;border:1px solid var(--line);border-radius:6px;font-size:.9em}
+::selection{background:var(--gold-soft)}
+</style>
+</head>
+<body>
+
+<!-- ================= PUBLIC SITE ================= -->
+<div id="publicSite">
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" onclick="showPublic('home')"><span class="brand-mark">C</span>Coaching Institute</a>
+    <nav class="pubnav" id="pubnav">
+      <a onclick="showPublic('home')" data-p="home">Home</a>
+      <a onclick="showPublic('about')" data-p="about">About</a>
+      <a onclick="showPublic('courses')" data-p="courses">Courses</a>
+      <a onclick="showPublic('contact')" data-p="contact">Contact</a>
+      <a onclick="showPublic('inquiry')" data-p="inquiry">Admission Inquiry</a>
+    </nav>
+    <a class="btn btn-gold btn-sm" onclick="showPublic('login')">Student / Teacher Login</a>
+  </div>
+</header>
+
+<section class="view active" id="pub-home">
+  <div class="hero"><div class="wrap">
+    <div>
+      <div class="eyebrow" style="color:var(--gold)">GRADES 8–12 · MATH · SCIENCE · ENGLISH</div>
+      <h1>Where every student gets a<br><span class="accent">clear path to the top rank.</span></h1>
+      <p>We have been coaching students in Pune since 2012 — small batches, dedicated subject teachers, and a portal that keeps parents in the loop every day.</p>
+      <div class="hero-actions">
+        <a class="btn btn-red" onclick="showPublic('inquiry')">Request a Demo Class</a>
+        <a class="btn btn-outline" style="color:#fff;border-color:#fff" onclick="showPublic('login')">Login to Portal</a>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><b>12+</b><span>Years of coaching</span></div>
+      <div class="stat"><b>1,400+</b><span>Students taught</span></div>
+      <div class="stat"><b>38</b><span>Active batches</span></div>
+      <div class="stat"><b>96%</b><span>Pass with distinction</span></div>
+    </div>
+  </div></div>
+
+  <div class="section"><div class="wrap">
+    <div class="section-head"><div class="eyebrow">WHY ZENITH</div><h2>Built around the student, not the syllabus</h2><p>Every batch is capped at 20 students so teachers can actually notice who's falling behind.</p></div>
+    <div class="grid grid-3">
+      <div class="card feature"><span class="num">01</span><h4>Focused batches</h4><p>Small groups sorted by level, not just by grade, so pace matches ability.</p></div>
+      <div class="card feature"><span class="num">02</span><h4>Weekly tests</h4><p>Short tests every week keep concepts fresh and reveal gaps early.</p></div>
+      <div class="card feature"><span class="num">03</span><h4>Parent visibility</h4><p>Attendance, fees and results are one login away for every parent.</p></div>
+    </div>
+  </div></div>
+
+  <div class="section band"><div class="wrap">
+    <div class="section-head"><div class="eyebrow" style="color:var(--gold)">SUBJECTS WE TEACH</div><h2>Our Courses</h2></div>
+    <div class="grid grid-4" id="homeCoursesGrid"></div>
+  </div></div>
+</section>
+
+<section class="view" id="pub-about">
+  <div class="section"><div class="wrap">
+    <div class="section-head"><div class="eyebrow">ABOUT US</div><h2>A coaching class run like a classroom, not a factory</h2></div>
+    <p style="max-width:70ch">We started in 2012 with one rented room and 14 students preparing for their Class 10 boards. Today we run 38 batches across Math, Science, English and Social Studies for Classes 8 to 12, still with the same rule: no batch bigger than 20 students. Our teachers are full-time — not visiting faculty — so they know every student's report card by heart.</p>
+    <div class="grid grid-3" style="margin-top:26px">
+      <div class="card"><h4>Our Mission</h4><p>Make every student exam-ready, not just syllabus-complete.</p></div>
+      <div class="card"><h4>Our Faculty</h4><p>8 full-time subject teachers, each with 5+ years of coaching experience.</p></div>
+      <div class="card"><h4>Our Campus</h4><p>2nd Floor, Sadguru Complex, FC Road, Pune — 6 classrooms, 1 library.</p></div>
+    </div>
+  </div></div>
+</section>
+
+<section class="view" id="pub-courses">
+  <div class="section"><div class="wrap">
+    <div class="section-head"><div class="eyebrow">PROGRAMS</div><h2>Courses &amp; Batches</h2><p>Every course below runs as a live batch with a fixed teacher and timetable — see exact timings after logging in.</p></div>
+    <div class="grid grid-3" id="coursesPageGrid"></div>
+  </div></div>
+</section>
+
+<section class="view" id="pub-contact">
+  <div class="section"><div class="wrap">
+    <div class="section-head"><div class="eyebrow">GET IN TOUCH</div><h2>Visit or write to us</h2></div>
+    <div class="grid grid-3">
+      <div class="card"><h4>Address</h4><p>2nd Floor, Sadguru Complex,<br>FC Road, Pune – 411004</p></div>
+      <div class="card"><h4>Phone</h4><p>+91 98220 XXXXX<br>Mon–Sat, 9am–7pm</p></div>
+      <div class="card"><h4>Email</h4><p>contact@institute.example<br>admissions@institute.example</p></div>
+    </div>
+  </div></div>
+</section>
+
+<section class="view" id="pub-inquiry">
+  <div class="wrap"><div class="login-wrap" style="max-width:520px">
+    <h3>Admission Inquiry</h3>
+    <p class="hint" style="margin-bottom:14px">Fill this form and the admin will call you to confirm a demo class.</p>
+    <div class="field"><label>Student name</label><input type="text" id="inqName"></div>
+    <div class="field"><label>Class / stream</label><input type="text" id="inqClass" placeholder="e.g. Class 10"></div>
+    <div class="field"><label>Area / locality</label><input type="text" id="inqArea"></div>
+    <div class="field"><label>Parent contact number</label><input type="text" id="inqContact"></div>
+    <div class="field"><label>Preferred subjects</label><input type="text" id="inqSubjects" placeholder="e.g. Mathematics, Science"></div>
+    <button class="btn btn-red" style="width:100%" onclick="submitInquiry()">Request Demo Class</button>
+    <p class="hint" id="inqMsg" style="margin-top:12px;text-align:center"></p>
+  </div></div>
+</section>
+
+<section class="view" id="pub-login">
+  <div class="wrap">
+    <div class="login-wrap">
+      <h3 style="text-align:center">Portal Login</h3>
+      <p class="hint" style="text-align:center;margin-bottom:16px">Prototype login — pick a role and continue, no real password check.</p>
+      <div class="role-toggle">
+        <button id="rtStudent" class="active" onclick="setLoginRole('student')">Student</button>
+        <button id="rtTeacher" onclick="setLoginRole('teacher')">Teacher</button>
+        <button id="rtAdmin" onclick="setLoginRole('admin')">Admin</button>
+      </div>
+      <div class="field"><label>Select your name</label>
+        <select id="loginPerson"></select>
+      </div>
+      <div class="field"><label>Password</label><input type="text" placeholder="••••••••" value="demo1234"></div>
+      <button class="btn btn-red" style="width:100%" onclick="doLogin()">Login to Dashboard</button>
+      <p class="hint" id="loginMsg" style="text-align:center;margin-top:10px;color:var(--red)"></p>
+      <p class="hint" style="text-align:center;margin-top:12px">Parents: ask the admin for the student login to view attendance &amp; fees.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <h4 style="font-family:Georgia,serif">Coaching Institute</h4>
+      <p>Coaching Classes 8–12 · Math, Science, English &amp; Social Studies · Pune, Maharashtra.</p>
+    </div>
+    <div><h4>Quick Links</h4>
+      <a onclick="showPublic('about')">About Us</a><a onclick="showPublic('courses')">Courses</a><a onclick="showPublic('login')">Portal Login</a>
+    </div>
+    <div><h4>Contact</h4>
+      <a>+91 98220 XXXXX</a><a>contact@institute.example</a><a>FC Road, Pune</a>
+    </div>
+  </div>
+  <div class="copyright">© 2026 Coaching Institute · Prototype build</div>
+</footer>
+</div>
+
+<!-- ================= STUDENT APP ================= -->
+<div class="app-shell" id="studentApp">
+  <div class="sidebar">
+    <div class="brand"><span class="brand-mark">C</span>Coaching Institute</div>
+    <button class="active" onclick="setTab('stu','overview')">Overview</button>
+    <button onclick="setTab('stu','subjects')">My Subjects</button>
+    <button onclick="setTab('stu','fees')">Fees</button>
+    <button onclick="setTab('stu','timetable')">Timetable</button>
+    <button class="logout" onclick="logout()">← Log out</button>
+  </div>
+  <div class="main">
+    <div class="main-head"><div><h2 id="stuHeading">Welcome</h2><div class="who" id="stuWho"></div></div></div>
+
+    <div class="tabpane active" id="stu-overview">
+      <div class="kpis" id="stuKpis"></div>
+      <div class="panel"><h3>My Subjects</h3><div id="stuBatchInfo"></div></div>
+    </div>
+    <div class="tabpane" id="stu-subjects">
+      <div class="panel"><h3>My Subjects</h3><p class="hint" style="margin-top:-8px;margin-bottom:14px">Click a subject to see its attendance, notes and test results.</p>
+        <div id="stuSubjectList"></div>
+      </div>
+    </div>
+    <div class="tabpane" id="stu-subjectDetail">
+      <a class="btn btn-outline btn-sm" style="margin-bottom:16px" onclick="setTab2('stu','subjects')">← Back to Subjects</a>
+      <h3 id="subDetailTitle" style="margin-bottom:16px"></h3>
+      <div class="panel"><h3>Attendance — Month wise</h3><div id="subDetailAttendance"></div></div>
+      <div class="panel"><h3>Test Results</h3><table><thead><tr><th>Test</th><th>Date</th><th>Marks</th><th>Grade</th></tr></thead><tbody id="subDetailResults"></tbody></table></div>
+      <div class="panel"><h3>Lecture Notes</h3><div id="subDetailNotes"></div></div>
+    </div>
+    <div class="tabpane" id="stu-fees">
+      <div class="panel"><h3>Fee Status</h3><div id="stuFeeCard"></div></div>
+    </div>
+    <div class="tabpane" id="stu-timetable">
+      <div class="panel"><h3>Weekly Timetable</h3><div id="stuTimetable"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= TEACHER APP ================= -->
+<div class="app-shell" id="teacherApp">
+  <div class="sidebar">
+    <div class="brand"><span class="brand-mark">C</span>Coaching Institute</div>
+    <button class="active" onclick="setTab('tea','overview')">Overview</button>
+    <button onclick="setTab('tea','students')">Batches &amp; Students</button>
+    <button onclick="setTab('tea','attendance')">Mark Attendance</button>
+    <button onclick="setTab('tea','fees')">Fee Status</button>
+    <button onclick="setTab('tea','tests')">Tests &amp; Results</button>
+    <button onclick="setTab('tea','notes')">Lecture Notes</button>
+    <button onclick="setTab('tea','timetable')">Timetable</button>
+    <button class="logout" onclick="logout()">← Log out</button>
+  </div>
+  <div class="main">
+    <div class="main-head"><div><h2 id="teaHeading">Welcome</h2><div class="who" id="teaWho"></div></div></div>
+
+    <div class="tabpane active" id="tea-overview">
+      <div class="kpis" id="teaKpis"></div>
+      <div class="panel"><h3>My Batches</h3><div id="teaBatchList"></div></div>
+    </div>
+    <div class="tabpane" id="tea-students">
+      <div class="panel"><h3>Students in My Batches</h3><table><thead><tr><th>Name</th><th>Batch</th><th>Phone</th><th>Email</th></tr></thead><tbody id="teaStudentsTable"></tbody></table></div>
+    </div>
+    <div class="tabpane" id="tea-attendance">
+      <div class="panel">
+        <h3>Mark Today's Attendance</h3>
+        <div class="inline-form"><div class="field"><label>Batch</label><select id="attBatchSel" onchange="renderAttendanceForm()"></select></div></div>
+        <table><thead><tr><th>Student</th><th>Status</th></tr></thead><tbody id="attMarkTable"></tbody></table>
+        <p class="hint">Marking saves instantly to this session's records.</p>
+      </div>
+    </div>
+    <div class="tabpane" id="tea-fees">
+      <div class="panel"><h3>Fee Status — All Students</h3><table><thead><tr><th>Student</th><th>Amount</th><th>Due Date</th><th>Status</th></tr></thead><tbody id="teaFeesTable"></tbody></table></div>
+    </div>
+    <div class="tabpane" id="tea-tests">
+      <div class="panel">
+        <h3>Create a Test</h3>
+        <div class="inline-form">
+          <div class="field"><label>Batch</label><select id="newTestBatch"></select></div>
+          <div class="field"><label>Title</label><input type="text" id="newTestTitle" placeholder="Unit Test 3"></div>
+          <div class="field"><label>Total Marks</label><input type="number" id="newTestMarks" value="50" style="width:90px"></div>
+          <button class="btn btn-red btn-sm" onclick="createTest()">Add Test</button>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>Enter Results</h3>
+        <div class="inline-form"><div class="field"><label>Select Test</label><select id="resultTestSel" onchange="renderResultsForm()"></select></div></div>
+        <table><thead><tr><th>Student</th><th>Marks Obtained</th><th>Grade</th></tr></thead><tbody id="resultMarkTable"></tbody></table>
+        <button class="btn btn-gold btn-sm" style="margin-top:12px" onclick="saveResults()">Save Results</button>
+        <p class="hint">Manual entry only — AI-assisted checking is not enabled in this prototype yet.</p>
+      </div>
+    </div>
+    <div class="tabpane" id="tea-notes">
+      <div class="panel">
+        <h3>Upload Lecture Notes</h3>
+        <div class="inline-form">
+          <div class="field"><label>Batch</label><select id="newNoteBatch"></select></div>
+          <div class="field"><label>Title</label><input type="text" id="newNoteTitle" placeholder="Chapter 5 — Trigonometry"></div>
+          <button class="btn btn-red btn-sm" onclick="addNote()">Add Note</button>
+        </div>
+        <div id="teaNotesList"></div>
+      </div>
+    </div>
+    <div class="tabpane" id="tea-timetable">
+      <div class="panel"><h3>Weekly Timetable — All My Batches</h3><div id="teaTimetable"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= ADMIN APP ================= -->
+<div class="app-shell" id="adminApp">
+  <div class="sidebar">
+    <div class="brand"><span class="brand-mark">C</span>Coaching Institute</div>
+    <button class="active" onclick="setTab('adm','overview')">Overview</button>
+    <button onclick="setTab('adm','admissions')">Admissions</button>
+    <button onclick="setTab('adm','teachers')">Teachers</button>
+    <button onclick="setTab('adm','students')">Students</button>
+    <button onclick="setTab('adm','timetable')">Timetable</button>
+    <button onclick="setTab('adm','fees')">Fees</button>
+    <button class="logout" onclick="logout()">← Log out</button>
+  </div>
+  <div class="main">
+    <div class="main-head"><div><h2>Admin Dashboard</h2><div class="who">Manages teachers, students, access, timetable and fees</div></div></div>
+    <div class="tabpane active" id="adm-overview">
+      <div class="kpis" id="admKpis"></div>
+      <div class="panel"><h3>Latest Admission Inquiries</h3><div id="admRecent"></div></div>
+    </div>
+    <div class="tabpane" id="adm-admissions">
+      <div class="panel"><h3>Admission Inquiries</h3>
+        <table><thead><tr><th>Student</th><th>Class</th><th>Area</th><th>Contact</th><th>Subjects</th><th>Status</th><th>Action</th></tr></thead><tbody id="admInqTable"></tbody></table>
+        <p class="hint">Schedule a demo class, then approve to create the student record and fee entry.</p></div>
+    </div>
+    <div class="tabpane" id="adm-teachers">
+      <div class="panel"><h3>Add Teacher</h3>
+        <div class="inline-form">
+          <div class="field"><label>Name</label><input type="text" id="newTeaName"></div>
+          <div class="field"><label>Subject</label><input type="text" id="newTeaSubject"></div>
+          <div class="field"><label>Phone</label><input type="text" id="newTeaPhone"></div>
+          <button class="btn btn-red btn-sm" onclick="addTeacher()">Add Teacher</button>
+        </div></div>
+      <div class="panel"><h3>Teachers</h3>
+        <table><thead><tr><th>Name</th><th>Subject</th><th>Phone</th><th>Batches</th><th>Access</th></tr></thead><tbody id="admTeaTable"></tbody></table></div>
+    </div>
+    <div class="tabpane" id="adm-students">
+      <div class="panel"><h3>Add Student</h3>
+        <div class="inline-form">
+          <div class="field"><label>Name</label><input type="text" id="newStuName"></div>
+          <div class="field"><label>Phone</label><input type="text" id="newStuPhone"></div>
+        </div>
+        <div class="field"><label>Assign to batches</label><div id="newStuBatches"></div></div>
+        <button class="btn btn-red btn-sm" onclick="addStudent()">Add Student</button></div>
+      <div class="panel"><h3>Students</h3>
+        <table><thead><tr><th>Name</th><th>Subjects</th><th>Phone</th><th>Access</th></tr></thead><tbody id="admStuTable"></tbody></table></div>
+    </div>
+    <div class="tabpane" id="adm-timetable">
+      <div class="panel"><h3>Add / Update a Slot</h3>
+        <div class="inline-form">
+          <div class="field"><label>Batch</label><select id="ttBatch"></select></div>
+          <div class="field"><label>Day</label><select id="ttDay"><option>Mon</option><option>Tue</option><option>Wed</option><option>Thu</option><option>Fri</option><option>Sat</option></select></div>
+          <div class="field"><label>Time</label><input type="text" id="ttTime" placeholder="4-5:30pm"></div>
+          <button class="btn btn-red btn-sm" onclick="setSlot()">Save Slot</button>
+        </div></div>
+      <div class="panel"><h3>Weekly Timetable (all batches)</h3><div id="admTimetable"></div></div>
+      <div class="panel"><h3>Slots</h3><table><thead><tr><th>Batch</th><th>Day</th><th>Time</th><th></th></tr></thead><tbody id="admSlotTable"></tbody></table></div>
+    </div>
+    <div class="tabpane" id="adm-fees">
+      <div class="panel"><h3>Decide Fees for a Batch</h3>
+        <div class="inline-form">
+          <div class="field"><label>Batch</label><select id="feeBatch"></select></div>
+          <div class="field"><label>Amount (₹)</label><input type="number" id="feeAmount" value="10000" style="width:110px"></div>
+          <div class="field"><label>Due date</label><input type="date" id="feeDue"></div>
+          <div class="field"><label>Installments</label><select id="feeInst"><option>1</option><option>2</option><option>3</option></select></div>
+          <button class="btn btn-red btn-sm" onclick="setBatchFee()">Apply</button>
+        </div></div>
+      <div class="panel"><h3>Fee Records</h3>
+        <table><thead><tr><th>Student</th><th>Amount</th><th>Due</th><th>Installments</th><th>Status</th><th></th></tr></thead><tbody id="admFeeTable"></tbody></table></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------------- DATA (matches ER diagram: Teacher, Batch, Student, Admission, Attendance, Fee, Test, TestResult) ---------------- */
+const teachers=[
+  {id:1,name:'Mrs. Anjali Deshmukh',subject:'Mathematics',email:'anjali@institute.example',phone:'98220 11111'},
+  {id:2,name:'Mr. Rahul Kulkarni',subject:'Science',email:'rahul@institute.example',phone:'98220 22222'},
+  {id:3,name:'Ms. Priya Nair',subject:'English',email:'priya@institute.example',phone:'98220 33333'}
+];
+const batches=[
+  {id:1,name:'Class 10 — Math (Batch A)',subject:'Mathematics',teacherId:1},
+  {id:2,name:'Class 9 — Science (Batch B)',subject:'Science',teacherId:2},
+  {id:3,name:'Class 10 — English (Batch C)',subject:'English',teacherId:3}
+];
+const students=[
+  {id:1,name:'Aarav Sharma',batchIds:[1,2,3],email:'aarav@example.com',phone:'90000 00001',dob:'2010-04-12'},
+  {id:2,name:'Isha Patil',batchIds:[1,3],email:'isha@example.com',phone:'90000 00002',dob:'2010-07-02'},
+  {id:3,name:'Kabir Joshi',batchIds:[2,1],email:'kabir@example.com',phone:'90000 00003',dob:'2011-01-19'},
+  {id:4,name:'Meera Iyer',batchIds:[2,3],email:'meera@example.com',phone:'90000 00004',dob:'2011-03-25'},
+  {id:5,name:'Yash Kulkarni',batchIds:[3,1,2],email:'yash@example.com',phone:'90000 00005',dob:'2010-09-09'}
+];
+let fees=[
+  {id:1,studentId:1,amount:12000,dueDate:'2026-10-05',status:'Paid'},
+  {id:2,studentId:2,amount:12000,dueDate:'2026-10-05',status:'Pending'},
+  {id:3,studentId:3,amount:9500,dueDate:'2026-10-10',status:'Pending'},
+  {id:4,studentId:4,amount:9500,dueDate:'2026-10-10',status:'Paid'},
+  {id:5,studentId:5,amount:8000,dueDate:'2026-09-28',status:'Overdue'}
+];
+let attendance=[
+  {studentId:1,batchId:1,date:'2026-08-03',status:'Present'},{studentId:1,batchId:1,date:'2026-08-10',status:'Absent'},{studentId:1,batchId:1,date:'2026-08-17',status:'Present'},
+  {studentId:1,batchId:1,date:'2026-09-07',status:'Present'},{studentId:1,batchId:1,date:'2026-09-14',status:'Present'},{studentId:1,batchId:1,date:'2026-09-21',status:'Present'},
+  {studentId:1,batchId:2,date:'2026-09-08',status:'Present'},{studentId:1,batchId:2,date:'2026-09-15',status:'Absent'},{studentId:1,batchId:2,date:'2026-09-22',status:'Present'},
+  {studentId:1,batchId:3,date:'2026-09-07',status:'Present'},{studentId:1,batchId:3,date:'2026-09-14',status:'Present'},
+  {studentId:2,batchId:1,date:'2026-09-07',status:'Absent'},{studentId:2,batchId:1,date:'2026-09-14',status:'Present'},{studentId:2,batchId:1,date:'2026-09-21',status:'Present'},
+  {studentId:2,batchId:3,date:'2026-09-07',status:'Present'},{studentId:2,batchId:3,date:'2026-09-14',status:'Present'},
+  {studentId:3,batchId:2,date:'2026-09-08',status:'Present'},{studentId:3,batchId:2,date:'2026-09-15',status:'Present'},{studentId:3,batchId:2,date:'2026-09-22',status:'Present'},
+  {studentId:3,batchId:1,date:'2026-09-07',status:'Present'},{studentId:3,batchId:1,date:'2026-09-14',status:'Absent'},
+  {studentId:4,batchId:2,date:'2026-09-08',status:'Present'},{studentId:4,batchId:2,date:'2026-09-15',status:'Present'},
+  {studentId:4,batchId:3,date:'2026-09-07',status:'Present'},{studentId:4,batchId:3,date:'2026-09-14',status:'Present'},
+  {studentId:5,batchId:3,date:'2026-09-07',status:'Present'},{studentId:5,batchId:1,date:'2026-09-07',status:'Present'},{studentId:5,batchId:2,date:'2026-09-08',status:'Absent'}
+];
+let tests=[
+  {id:1,batchId:1,title:'Unit Test 1 — Algebra',date:'2026-09-10',totalMarks:50},
+  {id:2,batchId:2,title:'Unit Test 1 — Physics Basics',date:'2026-09-12',totalMarks:50}
+];
+let testResults=[
+  {testId:1,studentId:1,marksObtained:44},{testId:1,studentId:2,marksObtained:38},
+  {testId:2,studentId:3,marksObtained:41},{testId:2,studentId:4,marksObtained:47}
+];
+let notes=[
+  {id:1,batchId:1,title:'Chapter 3 — Quadratic Equations (PDF)'},
+  {id:2,batchId:2,title:'Chapter 2 — Motion & Force (PDF)'},
+  {id:3,batchId:3,title:'Grammar Notes — Tenses (PDF)'}
+];
+const timetable=[
+  {batchId:1,day:'Mon',time:'4–5:30pm'},{batchId:1,day:'Wed',time:'4–5:30pm'},{batchId:1,day:'Fri',time:'4–5:30pm'},
+  {batchId:2,day:'Tue',time:'5–6:30pm'},{batchId:2,day:'Thu',time:'5–6:30pm'},{batchId:2,day:'Sat',time:'10–11:30am'},
+  {batchId:3,day:'Mon',time:'6–7pm'},{batchId:3,day:'Thu',time:'6–7pm'}
+];
+const days=['Mon','Tue','Wed','Thu','Fri','Sat'];
+const grade=m=>m>=90?'A+':m>=75?'A':m>=60?'B':m>=45?'C':'D';
+const byId=(arr,id)=>arr.find(x=>x.id===id);
+const batchName=id=>{const b=byId(batches,id);return b?b.name:'—'};
+let currentRole=null, current=null;
+
+/* ---------------- PUBLIC NAV ---------------- */
+function showPublic(p){
+  document.querySelectorAll('#publicSite .view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('pub-'+p).classList.add('active');
+  if(p==='login') setLoginRole(currentRole||'student');
+  document.querySelectorAll('#pubnav a').forEach(a=>a.classList.toggle('active',a.dataset.p===p));
+  window.scrollTo(0,0);
+}
+function renderCourseCards(){
+  const grouped={};
+  batches.forEach(b=>{ if(!grouped[b.subject]) grouped[b.subject]=[]; grouped[b.subject].push(b); });
+  const cardsHtml=Object.keys(grouped).map(sub=>{
+    const t=teachers.find(t=>t.subject===sub);
+    return `<div class="card course-card"><h4>${sub}</h4><span>Taught by ${t?t.name:''} · ${grouped[sub].length} batch(es)</span></div>`;
+  }).join('');
+  document.getElementById('homeCoursesGrid').innerHTML=cardsHtml;
+  document.getElementById('coursesPageGrid').innerHTML = batches.map(b=>{
+    const t=byId(teachers,b.teacherId);
+    const slots=timetable.filter(x=>x.batchId===b.id).map(x=>x.day+' '+x.time).join(', ');
+    return `<div class="card course-card"><h4>${b.name}</h4><span>Teacher: ${t.name}</span><p class="hint">${slots}</p></div>`;
+  }).join('');
+}
+
+/* ---------------- LOGIN ---------------- */
+function listFor(role){ return role==='student'?students:role==='teacher'?teachers:admins; }
+function setLoginRole(role){
+  currentRole=role;
+  ['Student','Teacher','Admin'].forEach(r=>document.getElementById('rt'+r).classList.toggle('active',role===r.toLowerCase()));
+  document.getElementById('loginPerson').innerHTML=listFor(role).map(p=>`<option value="${p.id}">${p.name}${p.active===false?' (access off)':''}</option>`).join('');
+}
+function doLogin(){
+  const p=byId(listFor(currentRole),parseInt(document.getElementById('loginPerson').value));
+  if(p.active===false){ document.getElementById('loginMsg').textContent='Access is switched off for this account. Please contact the admin.'; return; }
+  document.getElementById('loginMsg').textContent='';
+  current=p;
+  if(currentRole==='student') openStudentApp(); else if(currentRole==='teacher') openTeacherApp(); else openAdminApp();
+}
+function logout(){
+  ['studentApp','teacherApp','adminApp'].forEach(id=>document.getElementById(id).classList.remove('active'));
+  document.getElementById('publicSite').style.display='block';
+  showPublic('home');
+}
+
+/* ---------------- TAB SWITCH ---------------- */
+function setTab(app,name){
+  const prefix=app==='stu'?'stu':'tea';
+  document.querySelectorAll('#'+(app==='stu'?'studentApp':'teacherApp')+' .sidebar button').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.querySelectorAll('#'+(app==='stu'?'studentApp':'teacherApp')+' .tabpane').forEach(p=>p.classList.remove('active'));
+  document.getElementById(prefix+'-'+name).classList.add('active');
+}
+
+/* ---------------- STUDENT APP ---------------- */
+const monthName=ym=>new Date(ym+'-01').toLocaleString('en-IN',{month:'long',year:'numeric'});
+
+function openStudentApp(){
+  document.getElementById('publicSite').style.display='none';
+  document.getElementById('studentApp').classList.add('active');
+  document.getElementById('stuHeading').textContent='Hi, '+current.name.split(' ')[0]+' 👋';
+  document.getElementById('stuWho').textContent=current.batchIds.map(id=>byId(batches,id).subject).join(' · ');
+
+  const myAtt=attendance.filter(a=>a.studentId===current.id);
+  const presentPct= myAtt.length? Math.round(100*myAtt.filter(a=>a.status==='Present').length/myAtt.length):100;
+  const myFee=fees.find(f=>f.studentId===current.id);
+  const myResults=testResults.filter(r=>r.studentId===current.id);
+  const avgMarks= myResults.length? Math.round(myResults.reduce((s,r)=>s+r.marksObtained,0)/myResults.length):0;
+  const myNotesCount=notes.filter(n=>current.batchIds.includes(n.batchId)).length;
+
+  document.getElementById('stuKpis').innerHTML=`
+    <div class="kpi"><b>${current.batchIds.length}</b><span>Subjects Enrolled</span></div>
+    <div class="kpi"><b>${presentPct}%</b><span>Overall Attendance</span></div>
+    <div class="kpi"><b>${myFee?myFee.status:'—'}</b><span>Fee Status</span></div>
+    <div class="kpi"><b>${avgMarks}</b><span>Avg. Test Score</span></div>`;
+
+  document.getElementById('stuBatchInfo').innerHTML = current.batchIds.map(id=>{
+    const b=byId(batches,id), t=byId(teachers,b.teacherId);
+    return `<div class="rowline"><span>${b.subject}</span><b>${t.name}</b></div>`;
+  }).join('');
+
+  document.getElementById('stuFeeCard').innerHTML = myFee? `
+    <div class="rowline"><span>Amount Due</span><b>₹${myFee.amount.toLocaleString('en-IN')}</b></div>
+    <div class="rowline"><span>Due Date</span><b>${myFee.dueDate}</b></div>
+    <div class="rowline"><span>Installments allowed</span><b>${myFee.installments||1}</b></div>
+    <div class="rowline"><span>Status</span><span class="badge ${myFee.status==='Paid'?'badge-green':myFee.status==='Overdue'?'badge-red':'badge-gold'}">${myFee.status}</span></div>
+    ${myFee.status!=='Paid'?`<button class="btn btn-red btn-sm" style="margin-top:14px" onclick="payFee(${myFee.id})">Pay Now (mock)</button>`:'<p class="hint">Thank you — payment received.</p>'}`:'<p>No fee record.</p>';
+
+  renderSubjectList();
+  document.getElementById('stuTimetable').innerHTML = renderTimetableGrid(current.batchIds);
+  setTab2('stu','overview');
+  document.querySelectorAll('#studentApp .sidebar button').forEach((b,i)=>b.classList.toggle('active',i===0));
+}
+function renderSubjectList(){
+  document.getElementById('stuSubjectList').innerHTML = current.batchIds.map(id=>{
+    const b=byId(batches,id), t=byId(teachers,b.teacherId);
+    const sAtt=attendance.filter(a=>a.studentId===current.id && a.batchId===id);
+    const pct=sAtt.length?Math.round(100*sAtt.filter(a=>a.status==='Present').length/sAtt.length):100;
+    return `<div class="panel" style="cursor:pointer;margin-bottom:14px" onclick="showSubject(${id})">
+      <div class="rowline" style="border:none;padding:0">
+        <div><h4 style="margin-bottom:2px">${b.subject}</h4><span class="hint">${b.name} · ${t.name}</span></div>
+        <div style="text-align:right"><b style="color:var(--navy)">${pct}%</b><div class="hint">attendance</div></div>
+      </div></div>`;
+  }).join('');
+}
+function showSubject(batchId){
+  const b=byId(batches,batchId), t=byId(teachers,b.teacherId);
+  document.getElementById('subDetailTitle').textContent=b.subject+' — '+t.name;
+
+  const sAtt=attendance.filter(a=>a.studentId===current.id && a.batchId===batchId);
+  const byMonth={};
+  sAtt.forEach(a=>{ const ym=a.date.slice(0,7); (byMonth[ym]=byMonth[ym]||[]).push(a); });
+  const months=Object.keys(byMonth).sort();
+  document.getElementById('subDetailAttendance').innerHTML = months.length? months.map(ym=>{
+    const recs=byMonth[ym].sort((a,c)=>a.date.localeCompare(c.date));
+    const pct=Math.round(100*recs.filter(a=>a.status==='Present').length/recs.length);
+    return `<div style="margin-bottom:16px"><div class="rowline" style="border:none;padding:4px 0"><b>${monthName(ym)}</b><span class="badge ${pct>=75?'badge-green':'badge-red'}">${pct}% present</span></div>
+      <table><thead><tr><th>Date</th><th>Status</th></tr></thead><tbody>${recs.map(a=>`<tr><td>${a.date}</td><td><span class="badge ${a.status==='Present'?'badge-green':'badge-red'}">${a.status}</span></td></tr>`).join('')}</tbody></table></div>`;
+  }).join(''):'<p>No attendance records yet for this subject.</p>';
+
+  const myResults=testResults.filter(r=>r.studentId===current.id && byId(tests,r.testId).batchId===batchId);
+  document.getElementById('subDetailResults').innerHTML = myResults.length? myResults.map(r=>{
+    const test=byId(tests,r.testId); const g=grade(100*r.marksObtained/test.totalMarks);
+    return `<tr><td>${test.title}</td><td>${test.date}</td><td>${r.marksObtained}/${test.totalMarks}</td><td><span class="badge badge-gold">${g}</span></td></tr>`;
+  }).join(''):'<tr><td colspan="4">No results published yet.</td></tr>';
+
+  const myNotes=notes.filter(n=>n.batchId===batchId);
+  document.getElementById('subDetailNotes').innerHTML = myNotes.length? myNotes.map(n=>`<div class="note-item">📄 ${n.title}</div>`).join(''):'<p>No notes uploaded yet.</p>';
+
+  setTab2('stu','subjectDetail');
+}
+function payFee(id){ const f=fees.find(x=>x.id===id); f.status='Paid'; openStudentApp(); setTab2('stu','fees'); }
+function setTab2(app,name){ // helper to switch tab programmatically without event
+  document.querySelectorAll('#'+(app==='stu'?'studentApp':'teacherApp')+' .tabpane').forEach(p=>p.classList.remove('active'));
+  document.getElementById((app==='stu'?'stu':'tea')+'-'+name).classList.add('active');
+}
+
+/* ---------------- TEACHER APP ---------------- */
+function openTeacherApp(){
+  document.getElementById('publicSite').style.display='none';
+  document.getElementById('teacherApp').classList.add('active');
+  document.getElementById('teaHeading').textContent='Welcome, '+current.name;
+  document.getElementById('teaWho').textContent=current.subject+' Teacher';
+
+  const myBatches=batches.filter(b=>b.teacherId===current.id);
+  const myBatchIds=myBatches.map(b=>b.id);
+  const myStudents=students.filter(s=>s.batchIds.some(id=>myBatchIds.includes(id)));
+
+  document.getElementById('teaKpis').innerHTML=`
+    <div class="kpi"><b>${myBatches.length}</b><span>My Batches</span></div>
+    <div class="kpi"><b>${myStudents.length}</b><span>Total Students</span></div>
+    <div class="kpi"><b>${tests.filter(t=>myBatchIds.includes(t.batchId)).length}</b><span>Tests Conducted</span></div>
+    <div class="kpi"><b>${notes.filter(n=>myBatchIds.includes(n.batchId)).length}</b><span>Notes Uploaded</span></div>`;
+
+  document.getElementById('teaBatchList').innerHTML=myBatches.map(b=>{
+    const cnt=students.filter(s=>s.batchIds.includes(b.id)).length;
+    return `<div class="rowline"><span>${b.name}</span><b>${cnt} students</b></div>`;
+  }).join('');
+
+  document.getElementById('teaStudentsTable').innerHTML = myStudents.map(s=>{
+    const myPart=s.batchIds.filter(id=>myBatchIds.includes(id)).map(batchName).join(', ');
+    return `<tr><td>${s.name}</td><td>${myPart}</td><td>${s.phone}</td><td>${s.email}</td></tr>`;
+  }).join('');
+
+  const selBatch=document.getElementById('attBatchSel');
+  selBatch.innerHTML=myBatches.map(b=>`<option value="${b.id}">${b.name}</option>`).join('');
+  renderAttendanceForm();
+
+  document.getElementById('teaFeesTable').innerHTML = myStudents.map(s=>{
+    const f=fees.find(x=>x.studentId===s.id);
+    if(!f) return '';
+    return `<tr><td>${s.name}</td><td>₹${f.amount.toLocaleString('en-IN')}</td><td>${f.dueDate}</td><td><span class="badge ${f.status==='Paid'?'badge-green':f.status==='Overdue'?'badge-red':'badge-gold'}">${f.status}</span></td></tr>`;
+  }).join('');
+
+  document.getElementById('newTestBatch').innerHTML=myBatches.map(b=>`<option value="${b.id}">${b.name}</option>`).join('');
+  document.getElementById('newNoteBatch').innerHTML=myBatches.map(b=>`<option value="${b.id}">${b.name}</option>`).join('');
+  refreshResultTestSel();
+  refreshTeaNotes();
+  document.getElementById('teaTimetable').innerHTML=renderTimetableGrid(myBatchIds);
+
+  setTab2('tea','overview'); 
+  document.querySelectorAll('#teacherApp .sidebar button').forEach((b,i)=>b.classList.toggle('active',i===0));
+}
+function renderAttendanceForm(){
+  const bId=parseInt(document.getElementById('attBatchSel').value);
+  const list=students.filter(s=>s.batchIds.includes(bId));
+  document.getElementById('attMarkTable').innerHTML=list.map(s=>`
+    <tr><td>${s.name}</td><td>
+      <button class="btn btn-sm btn-gold" onclick="mark(${s.id},'Present',this)">Present</button>
+      <button class="btn btn-sm btn-outline" onclick="mark(${s.id},'Absent',this)">Absent</button>
+    </td></tr>`).join('');
+}
+function mark(sid,status,btn){
+  const bId=parseInt(document.getElementById('attBatchSel').value);
+  const today=new Date().toISOString().slice(0,10);
+  let rec=attendance.find(a=>a.studentId===sid && a.batchId===bId && a.date===today);
+  if(rec) rec.status=status; else attendance.push({studentId:sid,batchId:bId,date:today,status:status});
+  const row=btn.closest('tr');
+  row.querySelectorAll('button').forEach(b=>b.classList.remove('btn-red'));
+  btn.classList.add('btn-red');
+}
+function createTest(){
+  const bId=parseInt(document.getElementById('newTestBatch').value);
+  const title=document.getElementById('newTestTitle').value||'Untitled Test';
+  const marks=parseInt(document.getElementById('newTestMarks').value)||50;
+  tests.push({id:tests.length+1,batchId:bId,title,date:new Date().toISOString().slice(0,10),totalMarks:marks});
+  document.getElementById('newTestTitle').value='';
+  refreshResultTestSel();
+}
+function refreshResultTestSel(){
+  const myBatches=batches.filter(b=>b.teacherId===current.id).map(b=>b.id);
+  const sel=document.getElementById('resultTestSel');
+  const myTests=tests.filter(t=>myBatches.includes(t.batchId));
+  sel.innerHTML=myTests.map(t=>`<option value="${t.id}">${t.title} (${batchName(t.batchId)})</option>`).join('');
+  if(myTests.length) renderResultsForm();
+}
+function renderResultsForm(){
+  const tId=parseInt(document.getElementById('resultTestSel').value);
+  const test=byId(tests,tId); if(!test) return;
+  const list=students.filter(s=>s.batchIds.includes(test.batchId));
+  document.getElementById('resultMarkTable').innerHTML=list.map(s=>{
+    const r=testResults.find(x=>x.testId===tId && x.studentId===s.id);
+    return `<tr><td>${s.name}</td><td><input type="number" id="mark-${s.id}" value="${r?r.marksObtained:''}" style="width:70px" max="${test.totalMarks}"></td><td>${r?grade(100*r.marksObtained/test.totalMarks):'—'}</td></tr>`;
+  }).join('');
+}
+function saveResults(){
+  const tId=parseInt(document.getElementById('resultTestSel').value);
+  const test=byId(tests,tId);
+  students.filter(s=>s.batchIds.includes(test.batchId)).forEach(s=>{
+    const val=document.getElementById('mark-'+s.id).value;
+    if(val==='') return;
+    let r=testResults.find(x=>x.testId===tId && x.studentId===s.id);
+    if(r) r.marksObtained=parseInt(val); else testResults.push({testId:tId,studentId:s.id,marksObtained:parseInt(val)});
+  });
+  renderResultsForm();
+}
+function addNote(){
+  const bId=parseInt(document.getElementById('newNoteBatch').value);
+  const title=document.getElementById('newNoteTitle').value;
+  if(!title) return;
+  notes.push({id:notes.length+1,batchId:bId,title});
+  document.getElementById('newNoteTitle').value='';
+  refreshTeaNotes();
+}
+function refreshTeaNotes(){
+  const myBatches=batches.filter(b=>b.teacherId===current.id).map(b=>b.id);
+  document.getElementById('teaNotesList').innerHTML=notes.filter(n=>myBatches.includes(n.batchId)).map(n=>`<div class="note-item">📄 ${n.title} — <span class="hint">${batchName(n.batchId)}</span></div>`).join('');
+}
+
+/* ---------------- TIMETABLE ---------------- */
+function renderTimetableGrid(batchIds){
+  let html='<div class="tt-grid"><div class="hd">Batch</div>'+days.map(d=>`<div class="hd">${d}</div>`).join('')+'</div>';
+  return '<div class="tt-grid">'+
+    '<div class="hd">Batch</div>'+days.map(d=>`<div class="hd">${d}</div>`).join('')+
+    batchIds.map(bid=>{
+      const b=byId(batches,bid);
+      return `<div><b>${b.subject}</b></div>`+days.map(d=>{
+        const slot=timetable.find(t=>t.batchId===bid && t.day===d);
+        return slot?`<div class="slot">${slot.time}</div>`:'<div></div>';
+      }).join('');
+    }).join('')+
+    '</div>';
+}
+
+/* ---------------- ADMIN ---------------- */
+const admins=[{id:1,name:'Institute Admin'}];
+let inquiries=[
+  {id:1,name:'Rohan Mehta',cls:'Class 10',area:'Kothrud',contact:'98900 11122',subjects:'Mathematics, Science',status:'New',demo:''},
+  {id:2,name:'Sneha Rao',cls:'Class 9',area:'Aundh',contact:'98900 33344',subjects:'English',status:'Demo scheduled',demo:'2026-10-20'}
+];
+const nid=a=>a.reduce((m,x)=>Math.max(m,x.id||0),0)+1;
+const addDays=n=>new Date(Date.now()+n*864e5).toISOString().slice(0,10);
+const feeBadge=s=>s==='Paid'?'badge-green':s==='Overdue'?'badge-red':'badge-gold';
+const val=id=>document.getElementById(id).value.trim();
+const adminPane=n=>setTab2('adm',n);
+
+function submitInquiry(){
+  if(!val('inqName')||!val('inqContact')){ document.getElementById('inqMsg').textContent='Please enter the student name and parent contact number.'; return; }
+  inquiries.push({id:nid(inquiries),name:val('inqName'),cls:val('inqClass'),area:val('inqArea'),contact:val('inqContact'),subjects:val('inqSubjects'),status:'New',demo:''});
+  ['inqName','inqClass','inqArea','inqContact','inqSubjects'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('inqMsg').textContent='Thank you! Your inquiry is submitted. The admin will call to confirm a demo class.';
+}
+function openAdminApp(){
+  document.getElementById('publicSite').style.display='none';
+  document.getElementById('adminApp').classList.add('active');
+  renderAdmin(); adminPane('overview');
+  document.querySelectorAll('#adminApp .sidebar button').forEach((b,i)=>b.classList.toggle('active',i===0));
+}
+function renderAdmin(){
+  const open=inquiries.filter(i=>i.status!=='Approved').length;
+  document.getElementById('admKpis').innerHTML=`
+    <div class="kpi"><b>${students.length}</b><span>Students</span></div>
+    <div class="kpi"><b>${teachers.length}</b><span>Teachers</span></div>
+    <div class="kpi"><b>${open}</b><span>Open Inquiries</span></div>
+    <div class="kpi"><b>${fees.filter(f=>f.status!=='Paid').length}</b><span>Fees Pending</span></div>`;
+  document.getElementById('admRecent').innerHTML=inquiries.slice(-3).reverse().map(q=>`<div class="rowline"><span>${q.name} · ${q.cls}</span><span class="badge ${q.status==='Approved'?'badge-green':'badge-gold'}">${q.status}</span></div>`).join('')||'<p>No inquiries yet.</p>';
+  document.getElementById('admInqTable').innerHTML=inquiries.map(q=>`<tr><td>${q.name}</td><td>${q.cls}</td><td>${q.area}</td><td>${q.contact}</td><td>${q.subjects}</td>
+    <td><span class="badge ${q.status==='Approved'?'badge-green':q.status==='New'?'badge-red':'badge-gold'}">${q.status}${q.demo&&q.status==='Demo scheduled'?' · '+q.demo:''}</span></td>
+    <td>${q.status==='Approved'?'—':`<input type="date" id="demo-${q.id}" value="${q.demo}" style="width:130px"> <button class="btn btn-gold btn-sm" onclick="scheduleDemo(${q.id})">Schedule demo</button> <button class="btn btn-red btn-sm" onclick="approveInquiry(${q.id})">Approve</button>`}</td></tr>`).join('');
+  document.getElementById('admTeaTable').innerHTML=teachers.map(t=>`<tr><td>${t.name}</td><td>${t.subject}</td><td>${t.phone}</td><td>${batches.filter(b=>b.teacherId===t.id).length}</td>
+    <td><button class="btn btn-sm ${t.active===false?'btn-red':'btn-gold'}" onclick="toggleAccess('t',${t.id})">${t.active===false?'Access off':'Access on'}</button></td></tr>`).join('');
+  document.getElementById('admStuTable').innerHTML=students.map(st=>`<tr><td>${st.name}</td><td>${st.batchIds.map(id=>byId(batches,id).subject).join(', ')}</td><td>${st.phone||'—'}</td>
+    <td><button class="btn btn-sm ${st.active===false?'btn-red':'btn-gold'}" onclick="toggleAccess('s',${st.id})">${st.active===false?'Access off':'Access on'}</button></td></tr>`).join('');
+  document.getElementById('newStuBatches').innerHTML=batches.map(b=>`<label style="margin-right:14px;font-size:.9em"><input type="checkbox" class="stuBatchChk" value="${b.id}"> ${b.name}</label>`).join('');
+  const opts=batches.map(b=>`<option value="${b.id}">${b.name}</option>`).join('');
+  document.getElementById('ttBatch').innerHTML=opts; document.getElementById('feeBatch').innerHTML=opts;
+  document.getElementById('admTimetable').innerHTML=renderTimetableGrid(batches.map(b=>b.id));
+  document.getElementById('admSlotTable').innerHTML=timetable.map((t,i)=>`<tr><td>${batchName(t.batchId)}</td><td>${t.day}</td><td>${t.time}</td><td><button class="btn btn-sm btn-outline" onclick="removeSlot(${i})">Remove</button></td></tr>`).join('');
+  document.getElementById('admFeeTable').innerHTML=fees.map(f=>{ const st=byId(students,f.studentId); if(!st) return '';
+    return `<tr><td>${st.name}</td><td>₹${f.amount.toLocaleString('en-IN')}</td><td>${f.dueDate}</td><td>${f.installments||1}</td><td><span class="badge ${feeBadge(f.status)}">${f.status}</span></td>
+    <td>${f.status==='Paid'?'':`<button class="btn btn-sm btn-red" onclick="markPaid(${f.id})">Mark paid</button>`}</td></tr>`; }).join('');
+  if(!document.getElementById('feeDue').value) document.getElementById('feeDue').value=addDays(30);
+}
+function scheduleDemo(id){
+  const q=byId(inquiries,id); q.demo=document.getElementById('demo-'+id).value||addDays(1); q.status='Demo scheduled';
+  renderAdmin(); adminPane('admissions');
+}
+function approveInquiry(id){
+  const q=byId(inquiries,id);
+  let ids=batches.filter(b=>q.subjects.toLowerCase().includes(b.subject.toLowerCase())).map(b=>b.id);
+  if(!ids.length) ids=[batches[0].id];
+  const sid=nid(students);
+  students.push({id:sid,name:q.name,batchIds:ids,email:'',phone:q.contact,dob:''});
+  fees.push({id:nid(fees),studentId:sid,amount:8000,dueDate:addDays(30),status:'Pending',installments:1});
+  q.status='Approved'; renderAdmin(); adminPane('admissions');
+}
+function toggleAccess(type,id){
+  const p=byId(type==='t'?teachers:students,id); p.active=(p.active===false);
+  renderAdmin(); adminPane(type==='t'?'teachers':'students');
+}
+function addTeacher(){
+  if(!val('newTeaName')||!val('newTeaSubject')) return;
+  const tid=nid(teachers);
+  teachers.push({id:tid,name:val('newTeaName'),subject:val('newTeaSubject'),email:'',phone:val('newTeaPhone')||'—'});
+  batches.push({id:nid(batches),name:val('newTeaSubject')+' Batch',subject:val('newTeaSubject'),teacherId:tid});
+  ['newTeaName','newTeaSubject','newTeaPhone'].forEach(i=>document.getElementById(i).value='');
+  renderAdmin(); renderCourseCards(); adminPane('teachers');
+}
+function addStudent(){
+  if(!val('newStuName')) return;
+  const ids=[...document.querySelectorAll('.stuBatchChk:checked')].map(c=>parseInt(c.value));
+  if(!ids.length) ids.push(batches[0].id);
+  const sid=nid(students);
+  students.push({id:sid,name:val('newStuName'),batchIds:ids,email:'',phone:val('newStuPhone')||'—',dob:''});
+  fees.push({id:nid(fees),studentId:sid,amount:8000,dueDate:addDays(30),status:'Pending',installments:1});
+  ['newStuName','newStuPhone'].forEach(i=>document.getElementById(i).value='');
+  renderAdmin(); adminPane('students');
+}
+function setSlot(){
+  const bid=parseInt(val('ttBatch')), day=val('ttDay'), time=val('ttTime');
+  if(!time) return;
+  const ex=timetable.find(t=>t.batchId===bid&&t.day===day);
+  if(ex) ex.time=time; else timetable.push({batchId:bid,day,time});
+  document.getElementById('ttTime').value='';
+  renderAdmin(); renderCourseCards(); adminPane('timetable');
+}
+function removeSlot(i){ timetable.splice(i,1); renderAdmin(); renderCourseCards(); adminPane('timetable'); }
+function setBatchFee(){
+  const bid=parseInt(val('feeBatch')), amt=parseInt(val('feeAmount'))||0, due=val('feeDue'), inst=parseInt(val('feeInst'));
+  students.filter(st=>st.batchIds.includes(bid)).forEach(st=>{
+    const f=fees.find(x=>x.studentId===st.id);
+    if(f){ f.amount=amt; f.dueDate=due; f.installments=inst; } else fees.push({id:nid(fees),studentId:st.id,amount:amt,dueDate:due,status:'Pending',installments:inst});
+  });
+  renderAdmin(); adminPane('fees');
+}
+function markPaid(id){ byId(fees,id).status='Paid'; renderAdmin(); adminPane('fees'); }
+
+/* generic tab helpers (override earlier versions to support the admin app) */
+const APP_IDS={stu:'studentApp',tea:'teacherApp',adm:'adminApp'};
+function setTab(app,name){
+  document.querySelectorAll('#'+APP_IDS[app]+' .sidebar button').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  setTab2(app,name);
+}
+function setTab2(app,name){
+  document.querySelectorAll('#'+APP_IDS[app]+' .tabpane').forEach(p=>p.classList.remove('active'));
+  document.getElementById(app+'-'+name).classList.add('active');
+}
+
+/* init */
+renderCourseCards();
+setLoginRole('student');
+</script>
+</body>
+</html>
